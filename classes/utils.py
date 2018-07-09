@@ -6,6 +6,7 @@ class Utils():
     def pick(self, list):
         return list[randint(0, len(list) -1)]
     def menu(self, enemy, player, message):
+        player.avoid = False
         while 1:
             print(message + " It looks they have a " + enemy.viewName)
             answer = self.ask("What action will you take?").lower()

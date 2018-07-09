@@ -25,36 +25,38 @@ class Manager():
     "You approach a random person.", "That person looks like they want trouble.",
     "Someone is looking at you funny."]
 
-    def welcome(self):
-        print("Welcome to Super Dice Roller 5002!")
-        name = utils.ask("What is your name?")
-        print("Alright " + name + ". It is time for your dice rolling adventure to begin!")
+    def printGameDetails(self):
         print("You can have this Weighted D6. It was my favourite die when I was your age.")
         print("Obtained Weighted D6!")
         print("Take good care of it.")
-        return Player(name, [self.WD6], self.WD6)
 
-    def main(self):
-        player = self.welcome()
+    def createPlayer(self):
+        print("Welcome to Super Dice Roller 5002!")
+        name = utils.ask("What is your name?")
+        print("Alright " + name + ". It is time for your dice rolling adventure to begin!")
+        self.printGameDetails()
+        return Player(name, [self.WD6, self.WD4], self.WD6)
+
+    def fight(self, player, enemy):
+        fightRes = Fight(player, enemy, self.possibleDice).main()
+
+        if not isinstance(fightRes, bool):
+            player.dice.append(fightRes)
+        else:
+            if fightRes:
+                player.streak += 1
+            else:
+                running = False
+
+
+    def start(self):
+        player = self.createPlayer()
         running = True
         while running:
             enemy = utils.pick(self.possibleDice)
             message = utils.pick(self.encounterMessages)
 
-            player.avoid = False
+            utils.menu(enemy, player, message)
 
-            player = utils.menu(enemy, player, message)
-
-            fight = not player.avoid
-
-            if fight:
-                fightObj = Fight(player, enemy, self.possibleDice)
-                fightRes = fightObj.main()
-
-                if not isinstance(fightRes, bool):
-                    player.dice.append(fightRes)
-                else:
-                    if fightRes:
-                        player.streak += 1
-                    else:
-                        running = False
+            if not player.avoid:
+                self.fight(player, enemy)
